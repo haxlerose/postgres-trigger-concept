@@ -1,0 +1,15 @@
+detectors:
+  IrresponsibleModule:
+    enabled: false
+  FeatureEnvy:
+    enabled: false
+  TooManyStatements:
+    enabled: true
+    max_statements: 6
+  InstanceVariableAssumption:
+    enabled: false
+
+directories:
+  'app/helpers':
+    UtilityFunction:
+      enabled: false
