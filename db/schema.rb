@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_07_210402) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_08_154008) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "new_reports", force: :cascade do |t|
     t.string "report_name"
-    t.integer "status"
+    t.integer "status", default: 10
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -31,6 +31,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_07_210402) do
   create_table "reports", force: :cascade do |t|
     t.string "task_id"
     t.string "data"
+    t.integer "status"
     t.bigint "new_report_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -41,6 +42,19 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_07_210402) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_trigger("reports_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("reports").
+      after(:insert) do
+    "UPDATE new_reports SET status = NEW.status WHERE id = NEW.new_report_id;"
+  end
+
+  create_trigger("reports_after_update_of_status_row_tr", :generated => true, :compatibility => 1).
+      on("reports").
+      after(:update).
+      of(:status) do
+    "UPDATE new_reports SET status = NEW.status WHERE id = NEW.new_report_id;"
   end
 
 end
